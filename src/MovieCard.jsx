@@ -1,15 +1,15 @@
-import React, { useState, useEffect ,useContext} from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import ReactDOM from 'react-dom';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
-import axios from 'axios'; 
+import axios from 'axios';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteMoviesContext from './FavoriteMoviesContext';
-
-
 import './App.css';
+import Loading from './Loading';
 
 const DetailsUrl = 'http://www.omdbapi.com/?apikey=605a866f&t=';
 
@@ -17,7 +17,6 @@ const MovieCard = ({ movie }) => {
   const [open, setOpen] = useState(false);
   const [movieDetails, setMovieDetails] = useState(null);
   const { addFavoriteMovie, removeFavoriteMovie, favoriteMovies } = useContext(FavoriteMoviesContext);
-
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -72,71 +71,70 @@ const MovieCard = ({ movie }) => {
           <FavoriteIcon />
           {isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}
         </Button>
-        <Modal
-          open={open}
-          onClose={handleClose}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description"
-        >
-          <Box
-            className="Modal-Box flex"
-            sx={{
-              padding: '20px',
-              color: 'white',
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              backgroundImage: movieDetails ? `url(${movieDetails.Poster})` : 'none',
-            }}
+        {ReactDOM.createPortal(
+          <Modal
+            open={open}
+            onClose={handleClose}
           >
-            {movieDetails ? (
-              <>
-                <div className="w-1/2 p-5 bg-black bg-opacity-60 rounded-lg">
-                  <Typography id="modal-modal-title" variant="h6" component="h2">
-                    <p>{movieDetails.Type}</p>
-                    <p>{movieDetails.Year}</p>
-                    <h2 className='text-6xl'>{movieDetails.Title}</h2>
-                  </Typography>
-                  <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                    <p>
-                      Genre:{" "}
-                      {movieDetails.Genre && (
-                        <span>
-                          {movieDetails.Genre.split(", ").map((genre, i) => (
-                            <span className="Geners" key={i}>{genre}</span>
-                          ))}
-                        </span>
-                      )}
-                    </p>
-                    <p>Run Time: {movieDetails.Runtime}</p>
-                    <p>Actors: {movieDetails.Actors}</p>
-                    <p>Writer: {movieDetails.Writer}</p>
-                    <p>Country: {movieDetails.Country}</p>
-                    <p>Language: {movieDetails.Language}</p>
-                    <p>imdbRating: {movieDetails.imdbRating} <StarBorderIcon /></p>
-                    <Typography id="modal-modal-description" sx={{ mt: 8 }}>
-                      <p>{movieDetails.Plot}</p>
+            <Box
+              className="Modal-Box flex"
+              sx={{
+                padding: '20px',
+                color: 'white',
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                backgroundImage: movieDetails ? `url(${movieDetails.Poster})` : 'none',
+              }}
+            >
+              {movieDetails ? (
+                <>
+                  <div className="w-1/2 p-5 bg-black bg-opacity-60 rounded-lg">
+                    <Typography id="modal-modal-title" variant="h6" component="h2">
+                      <p>{movieDetails.Type}</p>
+                      <p>{movieDetails.Year}</p>
+                      <h2 className='text-6xl'>{movieDetails.Title}</h2>
                     </Typography>
-                  </Typography>
-                </div>
-                <div className="w-1/2 p-5">
-                  <img
-                    src={movieDetails.Poster !== 'N/A' ? movieDetails.Poster : 'https://via.placeholder.com/400'}
-                    alt={movieDetails.Title}
-                    className="rounded-lg shadow-lg"
-                  />
-                </div>
-              </>
-            ) : (
-              <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                Please wait...
-              </Typography>
-            )}
-          </Box>
-        </Modal>
+                    <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                      <p>
+                        Genre:{" "}
+                        {movieDetails.Genre && (
+                          <span>
+                            {movieDetails.Genre.split(", ").map((genre, i) => (
+                              <span className="Geners" key={i}>{genre}</span>
+                            ))}
+                          </span>
+                        )}
+                      </p>
+                      <p>Run Time: {movieDetails.Runtime}</p>
+                      <p>Actors: {movieDetails.Actors}</p>
+                      <p>Writer: {movieDetails.Writer}</p>
+                      <p>Country: {movieDetails.Country}</p>
+                      <p>Language: {movieDetails.Language}</p>
+                      <p>imdbRating: {movieDetails.imdbRating} <StarBorderIcon /></p>
+                      <Typography id="modal-modal-description" sx={{ mt: 8 }}>
+                        <p>{movieDetails.Plot}</p>
+                      </Typography>
+                    </Typography>
+                  </div>
+                  <div className="w-1/2 p-5">
+                    <img
+                      src={movieDetails.Poster !== 'N/A' ? movieDetails.Poster : 'https://via.placeholder.com/400'}
+                      alt={movieDetails.Title}
+                      className="rounded-lg shadow-lg"
+                    />
+                  </div>
+                </>
+              ) : (
+               <Loading/>
+              )}
+            </Box>
+          </Modal>,
+          document.body
+        )}
       </div>
     </div>
   );
